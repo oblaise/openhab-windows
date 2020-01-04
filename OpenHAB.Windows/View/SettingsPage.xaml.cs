@@ -1,7 +1,9 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Extensions.Logging;
 using OpenHAB.Core;
 using OpenHAB.Core.Messages;
+using OpenHAB.Core.Services;
 using OpenHAB.Core.ViewModel;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -14,6 +16,8 @@ namespace OpenHAB.Windows.View
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
+        private ILogger<SettingsViewModel> _logger;
+
         /// <summary>
         /// Gets the datacontext, for use in compiled bindings.
         /// </summary>
@@ -25,6 +29,9 @@ namespace OpenHAB.Windows.View
         public SettingsPage()
         {
             InitializeComponent();
+
+            DataContext = (SettingsViewModel)DIService.Instance.Services.GetService(typeof(SettingsViewModel));
+            _logger = (ILogger<SettingsViewModel>)DIService.Instance.Services.GetService(typeof(ILogger<SettingsViewModel>));
 
             Messenger.Default.Register<SettingsUpdatedMessage>(this, msg => ShowInfoMessage(msg));
         }
@@ -42,7 +49,7 @@ namespace OpenHAB.Windows.View
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex, "Show info message failed.");
             }
         }
 
